@@ -1,15 +1,27 @@
 import re
-import sys
-import os
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+from collections import defaultdict
 
-# ─────────────────────────────────────────────
-# CONFIG DETECTION
-# ─────────────────────────────────────────────
+# =========================================================
+# CONFIG
+# =========================================================
+
 RUN_REGEX = re.compile(r"run(\d+)", re.IGNORECASE)
+
+LINE_PATTERN = re.compile(
+    r"^(\d+)\s+(\S+)\s+([\d.]+)\s+([\d.]+)\s+(alive|DEAD)"
+)
+
+FINAL_PATTERN = re.compile(
+    r"^(\S+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)%\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(alive|DEAD)"
+)
+
+# =========================================================
+# HELPERS
+# =========================================================
 
 def get_run_id(name):
     m = RUN_REGEX.search(name)
@@ -17,86 +29,139 @@ def get_run_id(name):
 
 
 def node_type(h):
-    if h.startswith("p"): return "Pedestrian"
-    if h.startswith("c"): return "Car"
-    if h.startswith("w"): return "WiFi"
-    if h.startswith("t"): return "Tram"
+    if h.startswith("p"):
+        return "Pedestrian"
+
+    if h.startswith("c"):
+        return "Car"
+
+    if h.startswith("w"):
+        return "WiFi"
+
+    if h.startswith("t"):
+        return "Tram"
+
     return "Other"
 
 
-# ─────────────────────────────────────────────
+# =========================================================
 # FILE COLLECTION
-# ─────────────────────────────────────────────
+# =========================================================
+
 def collect_files(path):
+
     p = Path(path)
-    files = list(p.glob("*BatteryReport*.txt")) if p.is_dir() else list(Path().glob(path))
+
+    if p.is_dir():
+        files = list(p.glob("*BatteryReport*.txt"))
+    else:
+        files = list(Path().glob(path))
 
     grouped = {}
+
     for f in files:
+
         rid = get_run_id(f.name)
+
         if rid is not None:
             grouped[rid] = f
 
     return [grouped[k] for k in sorted(grouped.keys())]
 
 
-# ─────────────────────────────────────────────
+# =========================================================
 # PARSER
-# ─────────────────────────────────────────────
-def parse_file(fp):
-    nodes = []
+# =========================================================
 
-    pattern = re.compile(
-        r"^(\S+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)%\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(\w+)"
-    )
+def parse_file(fp):
+
+    timeline = []
+    final_nodes = []
 
     with open(fp, "r", encoding="utf-8", errors="ignore") as f:
+
         for line in f:
-            m = pattern.match(line.strip())
-            if not m:
+
+            line = line.strip()
+
+            # ---------------------------------------------
+            # TIMELINE DATA
+            # ---------------------------------------------
+            m = LINE_PATTERN.match(line)
+
+            if m:
+
+                timeline.append({
+                    "time": int(m.group(1)),
+                    "host": m.group(2),
+                    "energy": float(m.group(3)),
+                    "pct": float(m.group(4)),
+                    "dead": m.group(5) == "DEAD"
+                })
+
                 continue
 
-            nodes.append({
-                "host": m.group(1),
-                "initial": float(m.group(3)),
-                "remaining": float(m.group(2)),
-                "pct": float(m.group(4)),
-                "rx": float(m.group(6)),
-                "scan": float(m.group(7)),
-                "dead": m.group(8).lower() == "dead",
-                "type": node_type(m.group(1))
-            })
+            # ---------------------------------------------
+            # FINAL SUMMARY DATA
+            # ---------------------------------------------
+            m2 = FINAL_PATTERN.match(line)
 
-    return nodes
+            if m2:
+
+                final_nodes.append({
+                    "host": m2.group(1),
+                    "remaining": float(m2.group(2)),
+                    "initial": float(m2.group(3)),
+                    "pct": float(m2.group(4)),
+                    "tx": float(m2.group(5)),
+                    "rx": float(m2.group(6)),
+                    "scan": float(m2.group(7)),
+                    "dead": m2.group(8) == "DEAD",
+                    "type": node_type(m2.group(1))
+                })
+
+    return timeline, final_nodes
 
 
-# ─────────────────────────────────────────────
-# LOAD ALL RUNS
-# ─────────────────────────────────────────────
+# =========================================================
+# LOAD
+# =========================================================
+
 def load(path):
+
     files = collect_files(path)
 
-    all_data = {}
+    all_runs = []
+
     for f in files:
-        rid = get_run_id(f.name)
-        all_data[rid] = parse_file(f)
 
-    return all_data
+        timeline, final_nodes = parse_file(f)
+
+        all_runs.append({
+            "timeline": timeline,
+            "final": final_nodes
+        })
+
+    return all_runs
 
 
-# ─────────────────────────────────────────────
-# METRICS
-# ─────────────────────────────────────────────
-def compute(all_data):
-    runs = sorted(all_data.keys())
+# =========================================================
+# STATIC METRICS
+# =========================================================
+
+def compute_static_metrics(all_runs):
 
     avg_remaining = []
     dead_counts = []
 
-    type_loss = {}
+    type_loss = defaultdict(list)
 
-    for r in runs:
-        nodes = all_data[r]
+    for run in all_runs:
+
+        nodes = run["final"]
+
+        if not nodes:
+            continue
 
         avg_remaining.append(
             np.mean([n["pct"] for n in nodes])
@@ -107,77 +172,247 @@ def compute(all_data):
         )
 
         for n in nodes:
-            t = n["type"]
+
             loss = 100 - n["pct"]
 
-            if t not in type_loss:
-                type_loss[t] = []
-            type_loss[t].append(loss)
+            type_loss[n["type"]].append(loss)
 
-    return runs, avg_remaining, dead_counts, type_loss
+    return avg_remaining, dead_counts, type_loss
 
 
-# ─────────────────────────────────────────────
-# PLOTS (THESIS QUALITY)
-# ─────────────────────────────────────────────
-def plot(runs, avg, dead, type_loss):
+# =========================================================
+# SURVIVAL METRICS
+# =========================================================
 
-    fig = plt.figure(figsize=(18, 12))
+def compute_survival(all_runs):
 
-    # ── 1. Histogram ─────────────────────────
-    ax1 = plt.subplot(2, 2, 1)
-    ax1.hist(avg, bins=20, color="steelblue", edgecolor="black")
+    dead_probability = defaultdict(list)
+    survival_probability = defaultdict(list)
+
+    all_times = set()
+
+    for run in all_runs:
+
+        timeline = run["timeline"]
+
+        times = sorted(set(x["time"] for x in timeline))
+
+        all_times.update(times)
+
+        for t in times:
+
+            rows = [x for x in timeline if x["time"] == t]
+
+            total = len(rows)
+
+            if total == 0:
+                continue
+
+            dead = sum(r["dead"] for r in rows)
+
+            p_dead = dead / total
+            p_alive = 1 - p_dead
+
+            dead_probability[t].append(p_dead)
+            survival_probability[t].append(p_alive)
+
+    final_times = sorted(all_times)
+
+    dead_curve = []
+    survival_curve = []
+
+    for t in final_times:
+
+        dead_curve.append(
+            np.mean(dead_probability[t]) * 100
+        )
+
+        survival_curve.append(
+            np.mean(survival_probability[t]) * 100
+        )
+
+    return final_times, dead_curve, survival_curve
+
+
+# =========================================================
+# PLOTS
+# =========================================================
+
+def plot(
+    avg_remaining,
+    dead_counts,
+    type_loss,
+    times,
+    dead_curve,
+    survival_curve
+):
+
+    fig = plt.figure(figsize=(20, 18))
+
+    # =====================================================
+    # 1. Battery Remaining Histogram
+    # =====================================================
+
+    ax1 = plt.subplot(3, 2, 1)
+
+    ax1.hist(
+        avg_remaining,
+        bins=15,
+        edgecolor="black"
+    )
+
     ax1.set_title("Battery Remaining Distribution")
-    ax1.set_xlabel("Avg Remaining %")
+    ax1.set_xlabel("Average Remaining Battery (%)")
     ax1.set_ylabel("Frequency")
 
-    # ── 2. Trend line ─────────────────────────
-    ax2 = plt.subplot(2, 2, 2)
-    ax2.plot(runs, avg, marker="o", color="green")
-    ax2.set_title("Battery Trend Across Runs")
-    ax2.set_xlabel("Run ID")
-    ax2.set_ylabel("Avg Remaining %")
+    # =====================================================
+    # 2. Avg Battery Trend
+    # =====================================================
+
+    ax2 = plt.subplot(3, 2, 2)
+
+    ax2.plot(
+        range(1, len(avg_remaining) + 1),
+        avg_remaining,
+        marker='o'
+    )
+
+    ax2.set_title("Average Remaining Battery Across Runs")
+    ax2.set_xlabel("Run")
+    ax2.set_ylabel("Remaining Battery (%)")
+
     ax2.grid(True)
 
-    # ── 3. Dead nodes trend ───────────────────
-    ax3 = plt.subplot(2, 2, 3)
-    ax3.plot(runs, dead, marker="x", color="red")
+    # =====================================================
+    # 3. Dead Nodes Trend
+    # =====================================================
+
+    ax3 = plt.subplot(3, 2, 3)
+
+    ax3.plot(
+        range(1, len(dead_counts) + 1),
+        dead_counts,
+        marker='x'
+    )
+
     ax3.set_title("Dead Nodes Across Runs")
-    ax3.set_xlabel("Run ID")
+    ax3.set_xlabel("Run")
     ax3.set_ylabel("Dead Nodes")
+
     ax3.grid(True)
 
-    # ── 4. Type loss bar chart ────────────────
-    ax4 = plt.subplot(2, 2, 4)
+    # =====================================================
+    # 4. Battery Loss by Node Type
+    # =====================================================
+
+    ax4 = plt.subplot(3, 2, 4)
 
     labels = list(type_loss.keys())
-    means = [np.mean(type_loss[t]) for t in labels]
-    stds = [np.std(type_loss[t]) for t in labels]
 
-    ax4.bar(labels, means, yerr=stds, capsize=5)
+    means = [
+        np.mean(type_loss[t])
+        for t in labels
+    ]
+
+    stds = [
+        np.std(type_loss[t])
+        for t in labels
+    ]
+
+    ax4.bar(
+        labels,
+        means,
+        yerr=stds,
+        capsize=5
+    )
+
     ax4.set_title("Battery Loss per Node Type")
-    ax4.set_ylabel("Loss %")
+    ax4.set_ylabel("Battery Loss (%)")
+
+    # =====================================================
+    # 5. Death Probability Over Time
+    # =====================================================
+
+    ax5 = plt.subplot(3, 2, 5)
+
+    ax5.plot(
+        times,
+        dead_curve,
+        linewidth=2,
+        marker='o'
+    )
+
+    ax5.set_title(
+        "Probability of Node Battery Death Over Time"
+    )
+
+    ax5.set_xlabel("Simulation Time (s)")
+    ax5.set_ylabel("Dead Node Probability (%)")
+
+    ax5.grid(True)
+
+    # =====================================================
+    # 6. Survival Probability Over Time
+    # =====================================================
+
+    ax6 = plt.subplot(3, 2, 6)
+
+    ax6.plot(
+        times,
+        survival_curve,
+        linewidth=2,
+        marker='o'
+    )
+
+    ax6.set_title(
+        "Node Survival Probability Over Time"
+    )
+
+    ax6.set_xlabel("Simulation Time (s)")
+    ax6.set_ylabel("Survival Probability (%)")
+
+    ax6.grid(True)
+
+    # =====================================================
 
     plt.tight_layout()
-    plt.savefig("battery_thesis_analysis.png", dpi=200)
+
+    plt.savefig(
+        "battery_complete_analysis.png",
+        dpi=300,
+        bbox_inches="tight"
+    )
+
     plt.show()
 
 
-# ─────────────────────────────────────────────
+# =========================================================
 # MAIN
-# ─────────────────────────────────────────────
+# =========================================================
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
+
     parser.add_argument("path")
+
     args = parser.parse_args()
 
-    data = load(args.path)
+    all_runs = load(args.path)
 
-    print(f"[+] Loaded {len(data)} runs")
+    print(f"[+] Loaded {len(all_runs)} runs")
 
-    runs, avg, dead, type_loss = compute(data)
+    avg_remaining, dead_counts, type_loss = compute_static_metrics(all_runs)
 
-    plot(runs, avg, dead, type_loss)
+    times, dead_curve, survival_curve = compute_survival(all_runs)
 
-    print("[✓] Saved: battery_thesis_analysis.png")
+    plot(
+        avg_remaining,
+        dead_counts,
+        type_loss,
+        times,
+        dead_curve,
+        survival_curve
+    )
+
+    print("[✓] Saved: battery_complete_analysis.png")

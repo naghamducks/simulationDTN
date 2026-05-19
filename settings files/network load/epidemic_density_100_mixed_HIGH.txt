@@ -28,7 +28,7 @@
 Scenario.name = epidemic_density_100_mixed_HIGH
 Scenario.simulateConnections = true
 Scenario.updateInterval = 0.5
-Scenario.endTime = 10800
+Scenario.endTime = 43200
 
 btInterface.type = SimpleBroadcastInterface
 btInterface.transmitSpeed = 250k
