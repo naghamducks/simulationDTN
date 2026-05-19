@@ -1,0 +1,179 @@
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 100130
+  Buffer size	       : 10M
+  Router	       : Epedemic
+============================================================
+  Average overhead %   : 83.9530 %
+  Mean overhead %      : 83.9530 %
+  SD overhead %        : 6.3661 %
+  Min node overhead %  : 61.4923 %
+  Max node overhead %  : 93.0145 %
+  Mean of per-node SDs : 18.9667 %
+  Global peak overhead : 106.1314 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 110103
+  Buffer size	       : 20M
+  Router	       : Epedemic
+============================================================
+  Average overhead %   : 74.5334 %
+  Mean overhead %      : 74.5334 %
+  SD overhead %        : 13.8990 %
+  Min node overhead %  : 33.9902 %
+  Max node overhead %  : 91.9390 %
+  Mean of per-node SDs : 22.1150 %
+  Global peak overhead : 103.7966 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 113730
+  Buffer size	       : 30M
+  Router               : Epedemic
+============================================================
+  Average overhead %   : 64.5558 %
+  Mean overhead %      : 64.5558 %
+  SD overhead %        : 18.0591 %
+  Min node overhead %  : 22.6602 %
+  Max node overhead %  : 91.3067 %
+  Mean of per-node SDs : 22.4169 %
+  Global peak overhead : 102.3294 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 114207
+  Buffer size	       : 40M
+  Router	       : Epedemic
+============================================================
+  Average overhead %   : 55.5977 %
+  Mean overhead %      : 55.5977 %
+  SD overhead %        : 19.2220 %
+  Min node overhead %  : 16.9951 %
+  Max node overhead %  : 88.9238 %
+  Mean of per-node SDs : 21.7947 %
+  Global peak overhead : 101.1973 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 114001
+  Buffer size	       : 50M
+  Router	       : Epedemic
+============================================================
+  Average overhead %   : 49.9523 %
+  Mean overhead %      : 49.9523 %
+  SD overhead %        : 20.6436 %
+  Min node overhead %  : 13.5961 %
+  Max node overhead %  : 86.0806 %
+  Mean of per-node SDs : 20.3262 %
+  Global peak overhead : 100.9532 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 114072
+  Buffer size	       : 60M
+  Router	       : Epedemic
+============================================================
+  Average overhead %   : 43.2511 %
+  Mean overhead %      : 43.2511 %
+  SD overhead %        : 19.9541 %
+  Min node overhead %  : 11.3301 %
+  Max node overhead %  : 82.0530 %
+  Mean of per-node SDs : 18.6140 %
+  Global peak overhead : 100.6601 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 111285
+  Buffer size	       : 70M
+  Router	       : Epedemic
+============================================================
+  Average overhead %   : 38.3288 %
+  Mean overhead %      : 38.3288 %
+  SD overhead %        : 19.3268 %
+  Min node overhead %  : 9.7115 %
+  Max node overhead %  : 80.4903 %
+  Mean of per-node SDs : 17.2475 %
+  Global peak overhead : 99.9998 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 112543
+  Buffer size	       : 80M
+  Router	       : Epedemic
+============================================================
+  Average overhead %   : 35.1369 %
+  Mean overhead %      : 35.1369 %
+  SD overhead %        : 18.1332 %
+  Min node overhead %  : 8.4976 %
+  Max node overhead %  : 76.2535 %
+  Mean of per-node SDs : 15.9847 %
+  Global peak overhead : 100.8321 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 111999
+  Buffer size	       : 90M
+  Router	       : Epedemic
+============================================================
+  Average overhead %   : 31.7553 %
+  Mean overhead %      : 31.7553 %
+  SD overhead %        : 17.7779 %
+  Min node overhead %  : 7.5534 %
+  Max node overhead %  : 76.0458 %
+  Mean of per-node SDs : 14.7452 %
+  Global peak overhead : 100.9932 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 110525
+  Buffer size	       : 100M
+  Router	       : Epedemic
+============================================================
+  Average overhead %   : 28.4190 %
+  Mean overhead %      : 28.4190 %
+  SD overhead %        : 16.7026 %
+  Min node overhead %  : 6.7980 %
+  Max node overhead %  : 75.6993 %
+  Mean of per-node SDs : 13.4567 %
+  Global peak overhead : 100.6432 %
+============================================================
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,269 @@
+#
+# prophet_density_100_mixed_LOW.txt
+# PRoPHET routing — Network Load Variation study — LOW LOAD
+# Beirut map — 100 nodes, mixed node types, 5 pedestrian priority groups
+#
+# Load tier: LOW
+#   Events interval: 90, 120 seconds per stream
+#   5 parallel streams → ~1800–2400 total messages over 12 hours
+#   Expected: buffers never saturate, all protocols deliver well.
+#   Use this as your baseline / best-case reference run.
+#
+# Node count breakdown (total = 100):
+#   Group1  (p5)  =  10  priority 5  buffer 200M  hosts 0-9
+#   Group2  (p4)  =  10  priority 4  buffer 180M  hosts 10-19
+#   Group3  (p3)  =  10  priority 3  buffer 160M  hosts 20-29
+#   Group4  (p2)  =  10  priority 2  buffer 140M  hosts 30-39
+#   Group5  (p1)  =  10  priority 1  buffer 120M  hosts 40-49
+#   Group6  (c)   =  25  cars                     hosts 50-74
+#   Group7  (w)   =   7  WiFi APs                 hosts 75-81
+#   Group8  (t3)  =   6  tram line 3              hosts 82-87
+#   Group9  (t4)  =   8  tram line 4              hosts 88-95
+#   Group10 (t10) =   4  tram line 10             hosts 96-99
+#                     ---
+#                     100
+
+Scenario.name = prophet_density_100_mixed_LOW
+Scenario.simulateConnections = true
+Scenario.updateInterval = 0.5
+Scenario.endTime = 43200
+
+btInterface.type = SimpleBroadcastInterface
+btInterface.transmitSpeed = 250k
+btInterface.transmitRange = 10
+
+highspeedInterface.type = SimpleBroadcastInterface
+highspeedInterface.transmitSpeed = 10M
+highspeedInterface.transmitRange = 1000
+
+Scenario.nrofHostGroups = 10
+
+# --- Global defaults ---
+Group.movementModel = ShortestPathMapBasedMovement
+Group.router = ProphetV2Router
+Group.waitTime = 0, 120
+Group.nrofInterfaces = 1
+Group.interface1 = btInterface
+Group.speed = 0.5, 1.5
+Group.msgTtl = 300
+Group.nrofHosts = 1
+
+# --- Group 1: Pedestrians P5 ---
+Group1.groupID = p5
+Group1.nrofHosts = 10
+Group1.movementModel = ShortestPathMapBasedMovement
+Group1.router = ProphetBroadcastRouter
+Group1.bufferSize = 200M
+Group1.waitTime = 0, 120
+Group1.speed = 0.5, 1.5
+Group1.msgTtl = 300
+Group1.nrofInterfaces = 1
+Group1.interface1 = btInterface
+Group1.priority = 5
+
+# --- Group 2: Pedestrians P4 ---
+Group2.groupID = p4
+Group2.nrofHosts = 10
+Group2.movementModel = ShortestPathMapBasedMovement
+Group2.router = ProphetV2Router
+Group2.bufferSize = 180M
+Group2.waitTime = 0, 120
+Group2.speed = 0.5, 1.5
+Group2.msgTtl = 300
+Group2.nrofInterfaces = 1
+Group2.interface1 = btInterface
+Group2.priority = 4
+
+# --- Group 3: Pedestrians P3 ---
+Group3.groupID = p3
+Group3.nrofHosts = 10
+Group3.movementModel = ShortestPathMapBasedMovement
+Group3.router = ProphetV2Router
+Group3.bufferSize = 160M
+Group3.waitTime = 0, 120
+Group3.speed = 0.5, 1.5
+Group3.msgTtl = 300
+Group3.nrofInterfaces = 1
+Group3.interface1 = btInterface
+Group3.priority = 3
+
+# --- Group 4: Pedestrians P2 ---
+Group4.groupID = p2
+Group4.nrofHosts = 10
+Group4.movementModel = ShortestPathMapBasedMovement
+Group4.router = ProphetV2Router
+Group4.bufferSize = 140M
+Group4.waitTime = 0, 120
+Group4.speed = 0.5, 1.5
+Group4.msgTtl = 300
+Group4.nrofInterfaces = 1
+Group4.interface1 = btInterface
+Group4.priority = 2
+
+# --- Group 5: Pedestrians P1 ---
+Group5.groupID = p1
+Group5.nrofHosts = 10
+Group5.movementModel = ShortestPathMapBasedMovement
+Group5.router = ProphetV2Router
+Group5.bufferSize = 120M
+Group5.waitTime = 0, 120
+Group5.speed = 0.5, 1.5
+Group5.msgTtl = 300
+Group5.nrofInterfaces = 1
+Group5.interface1 = btInterface
+Group5.priority = 1
+
+# --- Group 6: Cars ---
+Group6.groupID = c
+Group6.nrofHosts = 25
+Group6.movementModel = ShortestPathMapBasedMovement
+Group6.okMaps = 1
+Group6.speed = 2.7, 13.9
+Group6.router = ProphetV2Router
+Group6.bufferSize = 20M
+Group6.waitTime = 0, 120
+Group6.msgTtl = 200
+Group6.nrofInterfaces = 1
+Group6.interface1 = btInterface
+Group6.priority = 2
+
+# --- Group 7: WiFi Access Points ---
+Group7.groupID = w
+Group7.nrofHosts = 7
+Group7.movementModel = ShortestPathMapBasedMovement
+Group7.waitTime = 43200, 43200
+Group7.speed = 0, 0
+Group7.router = ProphetBroadcastRouter
+Group7.bufferSize = 200M
+Group7.msgTtl = 500
+Group7.nrofInterfaces = 1
+Group7.interface1 = btInterface
+Group7.priority = 5
+
+# --- Group 8: Tram line 3 ---
+Group8.groupID = t3
+Group8.nrofHosts = 6
+Group8.movementModel = MapRouteMovement
+Group8.routeFile = data/tram3.wkt
+Group8.routeType = 1
+Group8.waitTime = 10, 30
+Group8.speed = 7, 10
+Group8.router = ProphetV2Router
+Group8.bufferSize = 140M
+Group8.msgTtl = 200
+Group8.nrofInterfaces = 2
+Group8.interface1 = btInterface
+Group8.interface2 = highspeedInterface
+Group8.priority = 3
+
+# --- Group 9: Tram line 4 ---
+Group9.groupID = t4
+Group9.nrofHosts = 8
+Group9.movementModel = MapRouteMovement
+Group9.routeFile = data/tram4.wkt
+Group9.routeType = 2
+Group9.waitTime = 10, 30
+Group9.speed = 7, 10
+Group9.router = ProphetV2Router
+Group9.bufferSize = 160M
+Group9.msgTtl = 200
+Group9.nrofInterfaces = 1
+Group9.interface1 = btInterface
+Group9.priority = 4
+
+# --- Group 10: Tram line 10 ---
+Group10.groupID = t10
+Group10.nrofHosts = 4
+Group10.movementModel = MapRouteMovement
+Group10.routeFile = data/tram10.wkt
+Group10.routeType = 2
+Group10.waitTime = 10, 30
+Group10.speed = 7, 10
+Group10.router = ProphetV2Router
+Group10.bufferSize = 160M
+Group10.msgTtl = 200
+Group10.nrofInterfaces = 1
+Group10.interface1 = btInterface
+Group10.priority = 4
+
+# --- Message generation — LOW LOAD (interval 90, 120) ---
+Events.nrof = 5
+
+Events1.class = MessageEventGenerator
+Events1.interval = 90, 120
+Events1.size = 500k, 1M
+Events1.hosts = 0, 9
+Events1.tohosts = 0, 99
+Events1.prefix = A
+Events1.priority = 5
+
+Events2.class = MessageEventGenerator
+Events2.interval = 90, 120
+Events2.size = 500k, 1M
+Events2.hosts = 10, 19
+Events2.tohosts = 0, 99
+Events2.prefix = B
+Events2.priority = 4
+
+Events3.class = MessageEventGenerator
+Events3.interval = 90, 120
+Events3.size = 500k, 1M
+Events3.hosts = 20, 29
+Events3.tohosts = 0, 99
+Events3.prefix = C
+Events3.priority = 3
+
+Events4.class = MessageEventGenerator
+Events4.interval = 90, 120
+Events4.size = 500k, 1M
+Events4.hosts = 30, 39
+Events4.tohosts = 0, 99
+Events4.prefix = D
+Events4.priority = 2
+
+Events5.class = MessageEventGenerator
+Events5.interval = 90, 120
+Events5.size = 500k, 1M
+Events5.hosts = 40, 49
+Events5.tohosts = 0, 99
+Events5.prefix = E
+Events5.priority = 1
+
+# --- Movement model ---
+MovementModel.rngSeed = 1
+MovementModel.worldSize = 11300, 3645
+MovementModel.warmup = 1000
+
+# --- Map files ---
+MapBasedMovement.nrofMapFiles = 4
+MapBasedMovement.mapFile1 = data/roads.wkt
+MapBasedMovement.mapFile2 = data/main_roads.wkt
+MapBasedMovement.mapFile3 = data/pedestrian_paths.wkt
+MapBasedMovement.mapFile4 = data/shops.wkt
+
+# --- Reports ---
+Report.nrofReports = 3
+Report.warmup = 1000
+Report.reportDir = reports/low_load/
+Report.report1 = MessageTransferReport
+Report.report2 = MessageStatsReport
+Report.report3 = BufferOccupancyReport
+
+# --- Router settings ---
+ProphetV2Router.secondsInTimeUnit = 30
+
+ProphetBroadcastRouter.secondsInTimeUnit = 30
+ProphetBroadcastRouter.beta = 0.9
+ProphetBroadcastRouter.relayThreshold = 0.05
+
+# --- Optimizations ---
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = false
+
+# --- GUI ---
+GUI.UnderlayImage.fileName = data/beirut_underlay.png
+GUI.UnderlayImage.offset = 0, 452
+GUI.UnderlayImage.scale = 0.2011
+GUI.UnderlayImage.rotate = 0
+
+GUI.EventLogPanel.nrofEvents = 100

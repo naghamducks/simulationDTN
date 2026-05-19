@@ -1,0 +1,20 @@
+Message stats for scenario prophet_battery_scenario
+sim_time: 43200.0000
+created: 2014
+started: 33338
+relayed: 16699
+aborted: 16628
+dropped: 13453
+removed: 0
+delivered: 1062
+delivery_prob: 0.5273
+response_prob: 0.0000
+overhead_ratio: 14.7241
+latency_avg: 6309.9892
+latency_med: 5635.5000
+hopcount_avg: 1.7420
+hopcount_med: 2
+buffertime_avg: 7529.6257
+buffertime_med: 5937.5000
+rtt_avg: NaN
+rtt_med: NaN

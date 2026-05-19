@@ -1,0 +1,173 @@
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 10M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 79.5040 %
+  Mean overhead %      : 79.5040 %
+  SD overhead %        : 8.1003 %
+  Min node overhead %  : 23.0238 %
+  Max node overhead %  : 92.7918 %
+  Mean of per-node SDs : 19.8198 %
+  Global peak overhead : 100.0000 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 20M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 73.1653 %
+  Mean overhead %      : 73.1653 %
+  SD overhead %        : 12.4694 %
+  Min node overhead %  : 14.8900 %
+  Max node overhead %  : 92.0797 %
+  Mean of per-node SDs : 24.1185 %
+  Global peak overhead : 99.9999 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 30M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 63.7435 %
+  Mean overhead %      : 63.7435 %
+  SD overhead %        : 13.7334 %
+  Min node overhead %  : 8.6373 %
+  Max node overhead %  : 86.2662 %
+  Mean of per-node SDs : 25.1895 %
+  Global peak overhead : 100.0000 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 40M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 52.8846 %
+  Mean overhead %      : 52.8846 %
+  SD overhead %        : 13.9171 %
+  Min node overhead %  : 7.6247 %
+  Max node overhead %  : 82.6123 %
+  Mean of per-node SDs : 24.1963 %
+  Global peak overhead : 99.9931 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 50M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 45.1182 %
+  Mean overhead %      : 45.1182 %
+  SD overhead %        : 13.3232 %
+  Min node overhead %  : 6.5885 %
+  Max node overhead %  : 78.6746 %
+  Mean of per-node SDs : 21.8104 %
+  Global peak overhead : 99.9970 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 60M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 38.7010 %
+  Mean overhead %      : 38.7010 %
+  SD overhead %        : 13.3353 %
+  Min node overhead %  : 5.3652 %
+  Max node overhead %  : 86.1014 %
+  Mean of per-node SDs : 19.4027 %
+  Global peak overhead : 100.0000 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 70M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 34.7539 %
+  Mean overhead %      : 34.7539 %
+  SD overhead %        : 12.7526 %
+  Min node overhead %  : 3.8067 %
+  Max node overhead %  : 79.0452 %
+  Mean of per-node SDs : 17.4343 %
+  Global peak overhead : 99.9212 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 80M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 30.6489 %
+  Mean overhead %      : 30.6489 %
+  SD overhead %        : 11.7786 %
+  Min node overhead %  : 3.3389 %
+  Max node overhead %  : 72.5393 %
+  Mean of per-node SDs : 15.0966 %
+  Global peak overhead : 99.9467 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 90M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 27.2794 %
+  Mean overhead %      : 27.2794 %
+  SD overhead %        : 10.6960 %
+  Min node overhead %  : 3.0814 %
+  Max node overhead %  : 66.8211 %
+  Mean of per-node SDs : 13.5661 %
+  Global peak overhead : 99.8100 %
+============================================================
+============================================================
+BUFFER OVERHEAD REPORT — GLOBAL AGGREGATE
+============================================================
+  Sampling interval    : 60 s
+  Nodes sampled        : 100
+  Total samples        : 71900
+  Buffer size	       : 100M
+  Router	       : Prophet
+============================================================
+  Average overhead %   : 24.0839 %
+  Mean overhead %      : 24.0839 %
+  SD overhead %        : 9.7530 %
+  Min node overhead %  : 2.7030 %
+  Max node overhead %  : 60.1390 %
+  Mean of per-node SDs : 12.1263 %
+  Global peak overhead : 99.6000 %
+============================================================
+
+
+
