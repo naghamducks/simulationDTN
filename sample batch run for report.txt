@@ -1,0 +1,55 @@
+
+-------- RUN 96 / 100 --------
+
+C:\Users\User\Desktop\the-one>java -Xmx512M -cp target;lib/ECLA.jar;lib/DTNConsoleConnection.jar core.DTNSim -b 1 temp_config.txt
+Run 1/1
+Running simulation 'prophet_battery_scenario'
+27.8 43200: 1551.73 1/s
+Simulation done in 27.81s
+---
+All done in 28.57s
+Saved run 96 (seed=13552)
+
+-------- RUN 97 / 100 --------
+
+C:\Users\User\Desktop\the-one>java -Xmx512M -cp target;lib/ECLA.jar;lib/DTNConsoleConnection.jar core.DTNSim -b 1 temp_config.txt
+Run 1/1
+Running simulation 'prophet_battery_scenario'
+25.1 43200: 1719.41 1/s
+Simulation done in 25.10s
+---
+All done in 25.91s
+Saved run 97 (seed=13589)
+
+-------- RUN 98 / 100 --------
+
+C:\Users\User\Desktop\the-one>java -Xmx512M -cp target;lib/ECLA.jar;lib/DTNConsoleConnection.jar core.DTNSim -b 1 temp_config.txt
+Run 1/1
+Running simulation 'prophet_battery_scenario'
+28.7 43200: 1504.29 1/s
+Simulation done in 28.70s
+---
+All done in 29.33s
+Saved run 98 (seed=13626)
+
+-------- RUN 99 / 100 --------
+
+C:\Users\User\Desktop\the-one>java -Xmx512M -cp target;lib/ECLA.jar;lib/DTNConsoleConnection.jar core.DTNSim -b 1 temp_config.txt
+Run 1/1
+Running simulation 'prophet_battery_scenario'
+28.8 43200: 1497.51 1/s
+Simulation done in 28.70s
+---
+All done in 29.43s
+Saved run 99 (seed=13663)
+
+-------- RUN 100 / 100 --------
+
+C:\Users\User\Desktop\the-one>java -Xmx512M -cp target;lib/ECLA.jar;lib/DTNConsoleConnection.jar core.DTNSim -b 1 temp_config.txt
+Run 1/1
+Running simulation 'prophet_battery_scenario'
+27.8 43200: 1551.28 1/s
+Simulation done in 27.81s
+---
+All done in 28.45s
+Saved run 100 (seed=13700)
