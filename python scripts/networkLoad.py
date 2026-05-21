@@ -21,6 +21,12 @@ loads = [
     "extreme_load"
 ]
 
+load_labels = {
+    "low_load": "Low",
+    "high_load": "High",
+    "extreme_load": "Extreme"
+}
+
 # =========================================================
 # BASIC METRIC PATTERNS
 # =========================================================
@@ -37,7 +43,6 @@ metrics_patterns = {
     "total_delivered": r"TOTAL delivered\s*:\s*(\d+)",
     "total_relays": r"TOTAL relays\s*:\s*(\d+)",
     "total_aborted": r"TOTAL aborted\s*:\s*(\d+)"
-
 }
 
 # =========================================================
@@ -51,7 +56,6 @@ priority_patterns = {
     "P3": r"P3 .*?created:(\d+).*?delivered:(\d+).*?aborted:(\d+).*?relays:(\d+)",
     "P2": r"P2 .*?created:(\d+).*?delivered:(\d+).*?aborted:(\d+).*?relays:(\d+)",
     "P1": r"P1 .*?created:(\d+).*?delivered:(\d+).*?aborted:(\d+).*?relays:(\d+)"
-
 }
 
 # =========================================================
@@ -65,7 +69,6 @@ advanced_priority_patterns = {
     "P3": r"P3 -> deliveryRate:([\d.]+)%.*?avgLatency:([\d.]+).*?avgHops:([\d.]+)",
     "P2": r"P2 -> deliveryRate:([\d.]+)%.*?avgLatency:([\d.]+).*?avgHops:([\d.]+)",
     "P1": r"P1 -> deliveryRate:([\d.]+)%.*?avgLatency:([\d.]+).*?avgHops:([\d.]+)"
-
 }
 
 # =========================================================
@@ -88,7 +91,7 @@ def extract_metric(content, pattern):
     return None
 
 # =========================================================
-# DEBUG START
+# START DEBUG
 # =========================================================
 
 print("\n=================================================")
@@ -102,12 +105,6 @@ if not os.path.exists(BASE_DIR):
 
     print("\nERROR: BASE DIRECTORY DOES NOT EXIST")
     exit()
-
-print("\nAVAILABLE PROTOCOLS:")
-
-for item in os.listdir(BASE_DIR):
-
-    print(" -", item)
 
 # =========================================================
 # MAIN PARSING LOOP
@@ -123,8 +120,7 @@ for protocol in protocols:
 
     if not os.path.exists(protocol_path):
 
-        print("PROTOCOL FOLDER NOT FOUND:")
-        print(protocol_path)
+        print("PROTOCOL FOLDER NOT FOUND")
         continue
 
     # -----------------------------------------------------
@@ -137,18 +133,12 @@ for protocol in protocols:
 
         load_path = os.path.join(protocol_path, load)
 
-        print("LOAD PATH:")
-        print(load_path)
-
         if not os.path.exists(load_path):
 
             print("LOAD FOLDER MISSING")
             continue
 
         run_folders = sorted(os.listdir(load_path))
-
-        print("RUNS FOUND:")
-        print(run_folders)
 
         if len(run_folders) == 0:
 
@@ -163,18 +153,10 @@ for protocol in protocols:
 
             run_path = os.path.join(load_path, run_folder)
 
-            print("\nRUN PATH:")
-            print(run_path)
-
             if not os.path.isdir(run_path):
-
-                print("NOT A DIRECTORY")
                 continue
 
             files = os.listdir(run_path)
-
-            print("FILES:")
-            print(files)
 
             stats_file = None
 
@@ -187,10 +169,6 @@ for protocol in protocols:
                 if "MessageTransferReport" in file:
 
                     stats_file = os.path.join(run_path, file)
-
-                    print("FOUND REPORT:")
-                    print(stats_file)
-
                     break
 
             if stats_file is None:
@@ -208,8 +186,6 @@ for protocol in protocols:
 
                     content = f.read()
 
-                print("FILE READ SUCCESS")
-
             except Exception as e:
 
                 print("FILE READ ERROR:")
@@ -225,28 +201,20 @@ for protocol in protocols:
                 "protocol": protocol,
                 "load": load,
                 "run": run_folder
-
             }
 
             # -------------------------------------------------
             # BASIC METRICS
             # -------------------------------------------------
 
-            print("\nBASIC METRICS:")
-
             for metric, pattern in metrics_patterns.items():
 
                 value = extract_metric(content, pattern)
-
                 row[metric] = value
-
-                print(f"{metric}: {value}")
 
             # -------------------------------------------------
             # PRIORITY COUNTS
             # -------------------------------------------------
-
-            print("\nPRIORITY COUNTS:")
 
             for priority, pattern in priority_patterns.items():
 
@@ -259,8 +227,6 @@ for protocol in protocols:
                     row[f"{priority}_aborted"] = int(match.group(3))
                     row[f"{priority}_relays"] = int(match.group(4))
 
-                    print(f"{priority} parsed successfully")
-
                 else:
 
                     row[f"{priority}_created"] = 0
@@ -268,13 +234,9 @@ for protocol in protocols:
                     row[f"{priority}_aborted"] = 0
                     row[f"{priority}_relays"] = 0
 
-                    print(f"{priority} NOT FOUND")
-
             # -------------------------------------------------
             # ADVANCED PRIORITY METRICS
             # -------------------------------------------------
-
-            print("\nADVANCED PRIORITY METRICS:")
 
             for priority, pattern in advanced_priority_patterns.items():
 
@@ -286,23 +248,17 @@ for protocol in protocols:
                     row[f"{priority}_avgLatency"] = float(match.group(2))
                     row[f"{priority}_avgHops"] = float(match.group(3))
 
-                    print(f"{priority} advanced metrics parsed")
-
                 else:
 
                     row[f"{priority}_deliveryRate"] = 0
                     row[f"{priority}_avgLatency"] = 0
                     row[f"{priority}_avgHops"] = 0
 
-                    print(f"{priority} advanced metrics missing")
-
             # -------------------------------------------------
             # STORE ROW
             # -------------------------------------------------
 
             all_results.append(row)
-
-            print("\nROW ADDED SUCCESSFULLY")
 
 # =========================================================
 # FINAL DEBUG
@@ -319,10 +275,6 @@ if len(all_results) == 0:
 
     print("\nERROR: NO DATA PARSED")
     exit()
-
-print("\nFIRST RESULT SAMPLE:\n")
-
-print(all_results[0])
 
 # =========================================================
 # CREATE DATAFRAME
@@ -348,33 +300,205 @@ print("\nSaved: priority_network_results.csv")
 # SUMMARY STATISTICS
 # =========================================================
 
-summary = df.groupby(["protocol", "load"]).mean().reset_index()
-
-print("\n=================================================")
-print("SUMMARY STATISTICS")
-print("=================================================\n")
-
-print(summary)
+summary = df.groupby(["protocol", "load"]).mean(numeric_only=True).reset_index()
 
 summary.to_csv("priority_summary_statistics.csv", index=False)
 
 print("\nSaved: priority_summary_statistics.csv")
 
 # =========================================================
-# PLOT SETTINGS
+# TABLE GENERATION FUNCTION
 # =========================================================
 
-load_order = [
-    "low_load",
-    "high_load",
-    "extreme_load"
-]
+def generate_metric_table(metric, ylabel, filename):
+
+    table_df = summary.pivot(
+        index="load",
+        columns="protocol",
+        values=metric
+    )
+
+    table_df = table_df.reindex(loads)
+
+    table_df.index = [
+        load_labels[x]
+        for x in table_df.index
+    ]
+
+    table_df = table_df.round(2)
+
+    fig, ax = plt.subplots(figsize=(8, 3))
+
+    ax.axis('off')
+
+    table = ax.table(
+        cellText=table_df.values,
+        rowLabels=table_df.index,
+        colLabels=table_df.columns,
+        loc='center'
+    )
+
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1.2, 1.8)
+
+    plt.title(ylabel)
+
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+
+    plt.close()
+
+    print(f"Generated Table: {filename}")
 
 # =========================================================
-# STANDARD METRIC PLOTS
+# PLOT GENERATION FUNCTION
 # =========================================================
 
-plot_metrics = [
+def generate_line_plot(metric, ylabel, filename):
+
+    plt.figure(figsize=(8,5))
+
+    for protocol in protocols:
+
+        subset = summary[summary["protocol"] == protocol]
+
+        subset = subset.set_index("load")
+
+        available_loads = [
+
+            l for l in loads
+            if l in subset.index
+        ]
+
+        subset = subset.loc[available_loads].reset_index()
+
+        x_labels = [
+            load_labels[x]
+            for x in subset["load"]
+        ]
+
+        plt.plot(
+            x_labels,
+            subset[metric],
+            marker='o',
+            linewidth=2,
+            label=protocol
+        )
+
+    plt.title(ylabel)
+
+    plt.xlabel("Network Load")
+
+    plt.ylabel(ylabel)
+
+    plt.grid(True)
+
+    plt.legend()
+
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+
+    plt.close()
+
+    print(f"Generated Plot: {filename}")
+
+# =========================================================
+# STANDARD METRICS
+# =========================================================
+
+standard_metrics = {
+
+    "delivery_prob": "Delivery Probability (%)",
+    "abort_prob": "Abort Probability (%)",
+    "latency_avg": "Average Latency (sec)",
+    "hopcount_avg": "Average Hop Count",
+    "overhead_ratio": "Overhead Ratio"
+}
+
+# =========================================================
+# GENERATE STANDARD PLOTS + TABLES
+# =========================================================
+
+for metric, ylabel in standard_metrics.items():
+
+    generate_line_plot(
+        metric,
+        ylabel,
+        f"{metric}_comparison.png"
+    )
+
+    generate_metric_table(
+        metric,
+        ylabel,
+        f"{metric}_table.png"
+    )
+
+# =========================================================
+# PRIORITY DELIVERY RATE TABLES + PLOTS
+# =========================================================
+
+priority_levels = ["P5", "P4", "P3", "P2", "P1"]
+
+for priority in priority_levels:
+
+    metric = f"{priority}_deliveryRate"
+
+    generate_line_plot(
+        metric,
+        f"{priority} Delivery Rate (%)",
+        f"{priority}_deliveryRate_comparison.png"
+    )
+
+    generate_metric_table(
+        metric,
+        f"{priority} Delivery Rate (%)",
+        f"{priority}_deliveryRate_table.png"
+    )
+
+# =========================================================
+# PRIORITY LATENCY TABLES + PLOTS
+# =========================================================
+
+for priority in priority_levels:
+
+    metric = f"{priority}_avgLatency"
+
+    generate_line_plot(
+        metric,
+        f"{priority} Average Latency (sec)",
+        f"{priority}_avgLatency_comparison.png"
+    )
+
+    generate_metric_table(
+        metric,
+        f"{priority} Average Latency (sec)",
+        f"{priority}_avgLatency_table.png"
+    )
+
+# =========================================================
+# PRIORITY HOPS TABLES + PLOTS
+# =========================================================
+
+for priority in priority_levels:
+
+    metric = f"{priority}_avgHops"
+
+    generate_line_plot(
+        metric,
+        f"{priority} Average Hop Count",
+        f"{priority}_avgHops_comparison.png"
+    )
+
+    generate_metric_table(
+        metric,
+        f"{priority} Average Hop Count",
+        f"{priority}_avgHops_table.png"
+    )
+
+# =========================================================
+# COMBINED SUMMARY TABLE
+# =========================================================
+
+combined_metrics = [
 
     "delivery_prob",
     "abort_prob",
@@ -384,109 +508,22 @@ plot_metrics = [
 
 ]
 
-for metric in plot_metrics:
+combined_table = summary[[
+    "protocol",
+    "load"
+] + combined_metrics]
 
-    plt.figure(figsize=(8,5))
+combined_table["load"] = combined_table["load"].map(load_labels)
 
-    for protocol in protocols:
+combined_table = combined_table.round(2)
 
-        subset = summary[summary["protocol"] == protocol]
+combined_table.to_csv(
+    "combined_summary_table.csv",
+    index=False
+)
 
-        subset = subset.set_index("load")
+print("\nGenerated: combined_summary_table.csv")
 
-        available_loads = [
-
-            l for l in load_order
-            if l in subset.index
-
-        ]
-
-        subset = subset.loc[available_loads].reset_index()
-
-        plt.plot(
-
-            subset["load"],
-            subset[metric],
-            marker='o',
-            linewidth=2,
-            label=protocol
-
-        )
-
-    plt.title(f"{metric} vs Network Load")
-
-    plt.xlabel("Network Load")
-
-    plt.ylabel(metric)
-
-    plt.grid(True)
-
-    plt.legend()
-
-    filename = f"{metric}_comparison.png"
-
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
-
-    plt.close()
-
-    print(f"Generated: {filename}")
-
-# =========================================================
-# PRIORITY DELIVERY RATE PLOTS
-# =========================================================
-
-priority_levels = ["P5", "P4", "P3", "P2", "P1"]
-
-for priority in priority_levels:
-
-    plt.figure(figsize=(8,5))
-
-    for protocol in protocols:
-
-        subset = summary[summary["protocol"] == protocol]
-
-        subset = subset.set_index("load")
-
-        available_loads = [
-
-            l for l in load_order
-            if l in subset.index
-
-        ]
-
-        subset = subset.loc[available_loads].reset_index()
-
-        plt.plot(
-
-            subset["load"],
-            subset[f"{priority}_deliveryRate"],
-            marker='o',
-            linewidth=2,
-            label=protocol
-
-        )
-
-    plt.title(f"{priority} Delivery Rate vs Network Load")
-
-    plt.xlabel("Network Load")
-
-    plt.ylabel("Delivery Rate (%)")
-
-    plt.grid(True)
-
-    plt.legend()
-
-    filename = f"{priority}_deliveryRate_comparison.png"
-
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
-
-    plt.close()
-
-    print(f"Generated: {filename}")
-
-# =========================================================
-# INTERPRETATION OUTPUT
-# =========================================================
 # =========================================================
 # INTERPRETATION OUTPUT
 # =========================================================
@@ -495,17 +532,15 @@ print("\n=================================================")
 print("INTERPRETATION")
 print("=================================================\n")
 
-# ---------------------------------------------------------
-# PER PROTOCOL ANALYSIS
-# ---------------------------------------------------------
-
 for protocol in protocols:
 
     print(f"\n#################################################")
     print(f"############ {protocol.upper()} ############")
     print("#################################################\n")
 
-    proto_data = summary[summary["protocol"] == protocol]
+    proto_data = summary[
+        summary["protocol"] == protocol
+    ]
 
     for _, row in proto_data.iterrows():
 
@@ -527,152 +562,11 @@ P4 HIGH      : {row['P4_deliveryRate']:.2f}%
 P3 MED-HIGH  : {row['P3_deliveryRate']:.2f}%
 P2 MEDIUM    : {row['P2_deliveryRate']:.2f}%
 P1 LOW       : {row['P1_deliveryRate']:.2f}%
-
-================ PRIORITY LATENCIES ================
-
-P5 Latency : {row['P5_avgLatency']:.2f} sec
-P4 Latency : {row['P4_avgLatency']:.2f} sec
-P3 Latency : {row['P3_avgLatency']:.2f} sec
-P2 Latency : {row['P2_avgLatency']:.2f} sec
-P1 Latency : {row['P1_avgLatency']:.2f} sec
-
-================ PRIORITY HOP COUNTS ================
-
-P5 Hops : {row['P5_avgHops']:.2f}
-P4 Hops : {row['P4_avgHops']:.2f}
-P3 Hops : {row['P3_avgHops']:.2f}
-P2 Hops : {row['P2_avgHops']:.2f}
-P1 Hops : {row['P1_avgHops']:.2f}
 """)
 
-# ---------------------------------------------------------
-# COMPARATIVE ANALYSIS
-# ---------------------------------------------------------
-
-print("\n=================================================")
-print("CROSS-PROTOCOL COMPARISON")
-print("=================================================\n")
-
-for load in load_order:
-
-    print(f"\n#################################################")
-    print(f"############ LOAD: {load.upper()} ############")
-    print("#################################################\n")
-
-    load_data = summary[summary["load"] == load]
-
-    # -----------------------------------------------------
-    # DELIVERY RANKING
-    # -----------------------------------------------------
-
-    best_delivery = load_data.sort_values(
-        by="delivery_prob",
-        ascending=False
-    )
-
-    print("DELIVERY PROBABILITY RANKING:")
-
-    for i, (_, row) in enumerate(best_delivery.iterrows(), start=1):
-
-        print(
-            f"{i}. {row['protocol']} "
-            f"-> {row['delivery_prob']:.2f}%"
-        )
-
-    # -----------------------------------------------------
-    # OVERHEAD RANKING
-    # -----------------------------------------------------
-
-    best_overhead = load_data.sort_values(
-        by="overhead_ratio",
-        ascending=True
-    )
-
-    print("\nLOWEST OVERHEAD RANKING:")
-
-    for i, (_, row) in enumerate(best_overhead.iterrows(), start=1):
-
-        print(
-            f"{i}. {row['protocol']} "
-            f"-> {row['overhead_ratio']:.2f}"
-        )
-
-    # -----------------------------------------------------
-    # LATENCY RANKING
-    # -----------------------------------------------------
-
-    best_latency = load_data.sort_values(
-        by="latency_avg",
-        ascending=True
-    )
-
-    print("\nLOWEST LATENCY RANKING:")
-
-    for i, (_, row) in enumerate(best_latency.iterrows(), start=1):
-
-        print(
-            f"{i}. {row['protocol']} "
-            f"-> {row['latency_avg']:.2f} sec"
-        )
-
-    # -----------------------------------------------------
-    # DISTRESS MESSAGE ANALYSIS
-    # -----------------------------------------------------
-
-    distress_best = load_data.sort_values(
-        by="P5_deliveryRate",
-        ascending=False
-    )
-
-    print("\nDISTRESS MESSAGE PRESERVATION (P5):")
-
-    for i, (_, row) in enumerate(distress_best.iterrows(), start=1):
-
-        print(
-            f"{i}. {row['protocol']} "
-            f"-> {row['P5_deliveryRate']:.2f}%"
-        )
-
-    # -----------------------------------------------------
-    # CONGESTION INTERPRETATION
-    # -----------------------------------------------------
-
-    print("\nCONGESTION ANALYSIS:")
-
-    for _, row in load_data.iterrows():
-
-        protocol_name = row['protocol']
-
-        overhead = row['overhead_ratio']
-
-        delivery = row['delivery_prob']
-
-        if overhead > 10:
-
-            congestion = "EXTREME FLOODING"
-
-        elif overhead > 5:
-
-            congestion = "HIGH CONGESTION"
-
-        elif overhead > 2:
-
-            congestion = "MODERATE CONGESTION"
-
-        else:
-
-            congestion = "LOW CONGESTION"
-
-        print(
-            f"{protocol_name}: "
-            f"{congestion} "
-            f"(Overhead={overhead:.2f}, "
-            f"Delivery={delivery:.2f}%)"
-        )
-
-# ---------------------------------------------------------
+# =========================================================
 # FINAL CONCLUSIONS
-# ---------------------------------------------------------
+# =========================================================
 
 print("\n=================================================")
 print("FINAL AUTOMATED CONCLUSIONS")
@@ -695,18 +589,21 @@ overall_distress = summary.groupby(
 )
 
 print("BEST OVERALL DELIVERY PERFORMANCE:")
+
 print(
     f"{overall_delivery.index[0]} "
     f"({overall_delivery.iloc[0]:.2f}%)"
 )
 
 print("\nLOWEST OVERALL OVERHEAD:")
+
 print(
     f"{overall_overhead.index[0]} "
     f"({overall_overhead.iloc[0]:.2f})"
 )
 
 print("\nBEST DISTRESS MESSAGE PRESERVATION:")
+
 print(
     f"{overall_distress.index[0]} "
     f"({overall_distress.iloc[0]:.2f}%)"
