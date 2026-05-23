@@ -33,10 +33,10 @@ def node_type(h):
         return "Pedestrian"
 
     if h.startswith("c"):
-        return "Car"
+        return "Emergency Vehicales"
 
     if h.startswith("w"):
-        return "WiFi"
+        return "Emergency Centers"
 
     if h.startswith("t"):
         return "Tram"

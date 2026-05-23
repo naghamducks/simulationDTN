@@ -1,0 +1,8 @@
+PROPHET DTN Simulation Study
+=================================
+
+Independent runs per density: 20
+Confidence interval: 95%
+Aggregation: Mean ± CI
+Standard deviation: Sample SD (ddof=1)
+Random seeds: Independent per run

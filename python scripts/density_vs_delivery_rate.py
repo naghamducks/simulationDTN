@@ -36,10 +36,22 @@ Features
     - Relay Overhead Ratio
     - Per-Priority QoS metrics
     - Standard deviation (sample SD)
-    - 95% confidence intervals
+    - 95% confidence intervals (t-distribution, correct for small n)
 ✓ Generates thesis-quality graphs
 ✓ Exports CSV summaries
 ✓ Publication-grade statistical handling
+
+FIXES vs original
+-------------------------------------------------------------------------------
+  FIX 1  SUMMARY_PATTERN now includes the dropped field.
+           The fixed MessageTransferReport emits:
+             P5 [...] -> created:N  delivered:N  aborted:N  dropped:N  relays:N
+           The old regex had no dropped:(\d+) group and would never match.
+
+  FIX 2  confidence_interval() now uses the t-distribution (via scipy) instead
+           of a hard-coded z=1.96.  For run counts below ~30 the t-distribution
+           produces wider, more honest CI bands.  Falls back to z=1.96 if scipy
+           is unavailable.
 
 Generated Outputs
 -------------------------------------------------------------------------------
@@ -72,7 +84,7 @@ python thesis_prophet_analyzer.py 100 200 300
 
 Requirements
 -------------------------------------------------------------------------------
-pip install matplotlib seaborn pandas numpy
+pip install matplotlib seaborn pandas numpy scipy
 """
 
 import os
@@ -117,7 +129,7 @@ PRIORITY_COLORS = {
 # =============================================================================
 
 SUMMARY_PATTERN = re.compile(
-    r"P(\d+)\s*->\s*created:(\d+)\s+delivered:(\d+)\s+aborted:(\d+)\s+relays:(\d+)"
+    r"P(\d+)\s*->\s*created:(\d+)\s+delivered:(\d+)\s+aborted:(\d+)\s+dropped:(\d+)\s+relays:(\d+)"
 )
 
 ADVANCED_PATTERN = re.compile(
@@ -153,24 +165,25 @@ def mean_std(vals):
 
 
 def confidence_interval(vals, confidence=0.95):
-
+    """
+    95 % confidence interval using the t-distribution (scipy) or a z=1.96
+    fallback when scipy is unavailable.  The t-distribution is correct for
+    small sample sizes (n < 30); using z=1.96 with sample SD underestimates
+    uncertainty for fewer than ~20 runs.
+    """
     vals = np.array(vals)
-
     n = len(vals)
-
     if n <= 1:
         return 0
-
-    # Sample standard deviation
     sample_std = np.std(vals, ddof=1)
-
-    # Standard error
     std_err = sample_std / np.sqrt(n)
-
-    # z-score for 95% confidence interval
-    z = 1.96
-
-    return z * std_err
+    try:
+        from scipy import stats as scipy_stats
+        t_crit = scipy_stats.t.ppf((1 + confidence) / 2, df=n - 1)
+    except ImportError:
+        # scipy not available — fall back to z=1.96 with a warning
+        t_crit = 1.96
+    return t_crit * std_err
 
 
 def export_experiment_info():
