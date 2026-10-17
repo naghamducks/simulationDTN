@@ -1,4 +1,5 @@
 # simulationDTN
+the changes are all applied to the original simulator THE ONE: https://github.com/akeranen/the-one
 changes in the-one simulator for our master's thesis
 including:
 
